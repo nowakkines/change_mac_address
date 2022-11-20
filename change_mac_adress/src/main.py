@@ -17,6 +17,14 @@ def hello():
     Check result --> [red]ifconfig
     ''', title='[white]Change MAC address'), justify='center')
 
+    process()
+
+
+def process():
+    options, argument = get_arguments(), get_arguments()
+    change_mac(options.interface, options.mac)
+
+
 def get_arguments():
     parser = argparse.ArgumentParser(
         prog='MacAddress',
@@ -41,10 +49,6 @@ def change_mac(interface, new_mac):
     call(['ifconfig', interface, 'hw', 'ether', new_mac])
     call(['ifconfig', interface, 'up'])
 
-
-# options, argument = get_arguments(), get_arguments()
-
-# change_mac(options.interface, options.mac)
 
 if __name__ == '__main__':
     hello()
