@@ -7,7 +7,9 @@ from rich.console import Console
 from rich.panel import Panel
 from rich import print
 import argparse
+
 console = Console()
+
 
 def hello():
     console.print(Panel('''
@@ -17,12 +19,7 @@ def hello():
     Check result --> [red]ifconfig
     ''', title='[white]Change MAC address'), justify='center')
 
-    process()
-
-
-def process():
-    options, argument = get_arguments(), get_arguments()
-    change_mac(options.interface, options.mac)
+    # process()
 
 
 def get_arguments():
@@ -43,12 +40,28 @@ def get_arguments():
     return options
 
 
+class UnAcceptedValueError(Exception):
+    def __init__(self, data):
+        self.data = data
+    def __str__(self):
+        return repr(self.data)
+
+
 def change_mac(interface, new_mac):
-    print(f'[+] Changing MAC adress for {interface} to {new_mac}')
-    call(['ifconfig', interface, 'down'])
-    call(['ifconfig', interface, 'hw', 'ether', new_mac])
-    call(['ifconfig', interface, 'up'])
+    find = options.interface
+    try:
+        print(f'[+] Changing MAC adress for {interface} to {new_mac}')
+        call(['ifconfig', interface, 'down'])
+        call(['ifconfig', interface, 'hw', 'ether', new_mac])
+        call(['ifconfig', interface, 'up'])
+        call(['ifconfig', find])
+    except UnAcceptedValueError as e:
+        print('We got some problems', e.data)
 
 
-if __name__ == '__main__':
-    hello()
+options, argument = get_arguments(), get_arguments()
+change_mac(options.interface, options.mac)
+
+
+# if __name__ == '__main__':
+#     hello()
