@@ -2,15 +2,9 @@
 from subprocess import call, check_output
 from rich.progress import track
 from time import sleep
-from rich.console import Console
-from rich.panel import Panel
-from rich import print
 import argparse
+
 import re
-
-#FIXME: python3 main.py -i l0 -m 00:11:22:33:44:55
-#subprocess.CalledProcessError: Command '['ifconfig', 'l0']' returned non-zero exit status 1.
-
 console = Console()
 
 def hello():
@@ -25,6 +19,8 @@ def hello():
     3. Check result [red]ifconfig[/red]
     4. Your current MAC address is [red]{current_mac}[/red]
     ''', title='[white]Change MAC address'), justify='center')
+=======
+
 
     # change_mac(options.inteface, options.new_mac)
 
@@ -41,7 +37,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(
         prog='MacAddress',
         description='The programm will got changed you MAC Address.',
-        epilog='HOW IT SHOULD LOOK LIKE --> python3 main.py -i eth0 -m 00:11:22:33:44:55')
+        epilog='Check it in "ifconfig"')
     parser.add_argument('-i',  '--interface',
                         help='Interface to change its MAC address')
     parser.add_argument('-m', '--mac', help='New MAC address')
@@ -60,7 +56,14 @@ def change_mac(interface, new_mac):
     call(['ifconfig', interface, 'down'])
     call(['ifconfig', interface, 'hw', 'ether', new_mac])
     call(['ifconfig', interface, 'up'])
+    call(['ifconfig'])
 
 
-if __name__ == '__main__':
-    hello()
+
+options, argument = get_arguments(), get_arguments()
+
+change_mac(options.interface, options.mac)
+
+if '__name__' == '__main__':
+    get_arguments()
+
