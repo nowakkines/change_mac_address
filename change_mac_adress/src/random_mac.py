@@ -1,4 +1,5 @@
 from random import randint
+#
 
 
 def gen_mac_char():
