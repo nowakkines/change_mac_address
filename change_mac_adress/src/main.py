@@ -1,25 +1,40 @@
 #!/usr/bin/env python
-
-from subprocess import SubprocessError, call
+from subprocess import call, check_output
 from rich.progress import track
 from time import sleep
 from rich.console import Console
 from rich.panel import Panel
 from rich import print
 import argparse
+import re
+
+#FIXME: python3 main.py -i l0 -m 00:11:22:33:44:55
+#subprocess.CalledProcessError: Command '['ifconfig', 'l0']' returned non-zero exit status 1.
 
 console = Console()
 
-
 def hello():
-    console.print(Panel('''
-    Help --> python3 main.py [red]--hello[/red]
-    How it should look like --> python3 main.py -i [red]INTERFACE[/red] -m [red]NEW_MAC[/red]
-    For example --> [blue]python3 main.py -i eth0 -m 00:11:22:33:44:55[/blue]
-    Check result --> [red]ifconfig
+
+    options = get_arguments()
+    current_mac = get_current_mac(options.interface)
+
+    console.print(Panel(f'''
+    1. Help is [red]python3 main.py --hello[/red]
+    2. How it should look like [red]python3 main.py -i INTERFACE -m NEW_MAC[/red]
+       2.1 For example [red]python3 main.py -i eth0 -m 00:11:22:33:44:55[/red]
+    3. Check result [red]ifconfig[/red]
+    4. Your current MAC address is [red]{current_mac}[/red]
     ''', title='[white]Change MAC address'), justify='center')
 
-    # process()
+    # change_mac(options.inteface, options.new_mac)
+
+def get_current_mac(interface):
+    ifconfig_result  = check_output(['ifconfig', interface])
+    mac_adress_result = re.search(r'\w\w:\w\w:\w\w:\w\w:\w\w:\w\w', str(ifconfig_result))
+    if mac_adress_result:
+       return mac_adress_result.group(0)
+    else:
+        return 'Coudn\'t read interface' # change it
 
 
 def get_arguments():
@@ -40,28 +55,12 @@ def get_arguments():
     return options
 
 
-class UnAcceptedValueError(Exception):
-    def __init__(self, data):
-        self.data = data
-    def __str__(self):
-        return repr(self.data)
-
-
 def change_mac(interface, new_mac):
-    find = options.interface
-    try:
-        print(f'[+] Changing MAC adress for {interface} to {new_mac}')
-        call(['ifconfig', interface, 'down'])
-        call(['ifconfig', interface, 'hw', 'ether', new_mac])
-        call(['ifconfig', interface, 'up'])
-        call(['ifconfig', find])
-    except UnAcceptedValueError as e:
-        print('We got some problems', e.data)
+    print(f'[+] Changing MAC adress for {interface} to {new_mac}')
+    call(['ifconfig', interface, 'down'])
+    call(['ifconfig', interface, 'hw', 'ether', new_mac])
+    call(['ifconfig', interface, 'up'])
 
 
-options, argument = get_arguments(), get_arguments()
-change_mac(options.interface, options.mac)
-
-
-# if __name__ == '__main__':
-#     hello()
+if __name__ == '__main__':
+    hello()
