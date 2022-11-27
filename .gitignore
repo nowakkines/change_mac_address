@@ -1,3 +1,5 @@
 .venv
 tempCodeRunnerFile.py
 parser.py
+random_mac.py
+__pycache__

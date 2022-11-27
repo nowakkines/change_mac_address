@@ -8,10 +8,11 @@ from rich import print
 import argparse
 import re
 
-#FIXME: python3 main.py -i l0 -m 00:11:22:33:44:55
-#subprocess.CalledProcessError: Command '['ifconfig', 'l0']' returned non-zero exit status 1.
+# FIXME: python3 main.py -i l0 -m 00:11:22:33:44:55
+# subprocess.CalledProcessError: Command '['ifconfig', 'l0']' returned non-zero exit status 1.
 
 console = Console()
+
 
 def hello():
 
@@ -23,18 +24,23 @@ def hello():
     2. How it should look like [red]python3 main.py -i INTERFACE -m NEW_MAC[/red]
        2.1 For example [red]python3 main.py -i eth0 -m 00:11:22:33:44:55[/red]
     3. Check result [red]ifconfig[/red]
-    4. Your current MAC address is [red]{current_mac}[/red]
+    4. Your current MAC address is [blue]{current_mac}[/blue]
     ''', title='[white]Change MAC address'), justify='center')
 
-    # change_mac(options.inteface, options.new_mac)
+    change_mac(options.interface, options.mac)
+
+    check_mac_adress(current_mac, options)
+
+
 
 def get_current_mac(interface):
-    ifconfig_result  = check_output(['ifconfig', interface])
-    mac_adress_result = re.search(r'\w\w:\w\w:\w\w:\w\w:\w\w:\w\w', str(ifconfig_result))
+    ifconfig_result = check_output(['ifconfig', interface])
+    mac_adress_result = re.search(
+        r'\w\w:\w\w:\w\w:\w\w:\w\w:\w\w', str(ifconfig_result))
     if mac_adress_result:
-       return mac_adress_result.group(0)
+        return mac_adress_result.group(0)
     else:
-        return 'Coudn\'t read interface' # change it
+        return 'Coudn\'t read interface'  # change it
 
 
 def get_arguments():
@@ -45,14 +51,23 @@ def get_arguments():
     parser.add_argument('-i',  '--interface',
                         help='Interface to change its MAC address')
     parser.add_argument('-m', '--mac', help='New MAC address')
-    options, arguments = parser.parse_args(), parser.parse_args()
+
+    options = parser.parse_args()
 
     if not options.interface:
-        parser.error('[-] Please specify an interface, use --help for more info.')
+        parser.error(
+            '[-] Please specify an interface, use --help for more info.')
     elif not options.mac:
         parser.error('[-] Please specify a new mac, use --help for more info.')
 
     return options
+
+
+def check_mac_adress(current_mac, options):
+    if current_mac != options.mac:
+        print(f'[+] Mac address was successfully changed to {current_mac}')
+    else:
+        print('[-] MAC address didn\'t get changed.')
 
 
 def change_mac(interface, new_mac):
