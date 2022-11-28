@@ -59,7 +59,7 @@ def check_mac_adress(current_mac, options):
 
 
 def change_mac(interface, new_mac):
-    print(f'[+] Changing MAC adress for {interface} to {new_mac}')
+    print(f'[+] Changing MAC address for {interface} to {new_mac}')
     call(['ifconfig', interface, 'down'])
     call(['ifconfig', interface, 'hw', 'ether', new_mac])
     call(['ifconfig', interface, 'up'])
