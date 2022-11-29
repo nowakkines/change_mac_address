@@ -1,6 +1,5 @@
 from random import randint
-from subprocess import call
-import argparse
+
 
 def gen_mac_char():
     return hex((randint(0, 16))).split('x')[1]
@@ -15,15 +14,8 @@ def gen_last_half_mac(stem):
 
 def get_mac_address():
     new_mac = gen_last_half_mac('00:60:2f')
-    change_mac(new_mac)
-
-def change_mac(new_mac):
-    interface = input('write here >> ')
-    print(f'[+] Changing MAC address for {interface} {new_mac}')
-    call(['ifconfig', interface, 'down'])
-    call(['ifconfig', interface, 'hw', 'ether', new_mac])
-    call(['ifconfig', interface, 'up'])
+    return new_mac
 
 
 if __name__ == '__main__':
-    get_mac_address()
+    print(get_mac_address())
